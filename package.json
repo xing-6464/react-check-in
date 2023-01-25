@@ -1,5 +1,5 @@
 {
-  "name": "react-attendance",
+  "name": "react-check-in",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,8 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.0.1",
+    "@reduxjs/toolkit": "^1.9.1",
+    "antd": "^5.1.6",
+    "axios": "^1.2.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.7.0",
+    "redux": "^4.2.0",
+    "redux-persist": "^6.0.0",
+    "sass": "^1.57.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
