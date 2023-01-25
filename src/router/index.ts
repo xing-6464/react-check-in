@@ -46,7 +46,7 @@ export const routes: RouteObject[] = [
       menu: true,
       title: '考勤管理',
       icon: React.createElement(CopyOutlined),
-      auth: true
+      auth: false
     },
     children: [
       {

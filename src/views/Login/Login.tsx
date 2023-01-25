@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { useNavigate } from 'react-router-dom'
 import { message, Button, Form, Input, Row, Col } from 'antd'
 import classnames from 'classnames'
 
@@ -24,32 +24,34 @@ const testUsers: User[] = [
 ]
 
 function Login() {
+  const navigate = useNavigate()
   const token = useSelector(s => s.users.token)
   const dispatch = useAppDispatch()
-  console.log(styles)
 
-  const handleLogin = () => {
-    dispatch(loginAction({ email: 'huangrong@imooc.com', pass: 'huangrong' })).then((action) => {
+  const [form] = Form.useForm()
+
+  const onFinish = (values: User) => {
+    dispatch(loginAction(values)).then((action) => {
       const { errcode, token } = (action.payload as {[index: string]: unknown}).data as {[index: string]: unknown}
       if (errcode === 0 && typeof token === 'string') {
         dispatch(updateToken(token))
         message.success('登录成功')
+        navigate('/')
       } else {
         message.error('登录失败')
       }
     })
   }
-
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-  }
   
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+  const onFinishFailed = ({ values }: { values: User }) => {
+    console.log('Failed:', values);
   }
 
   const autoLogin = (user: User) => {
-    return () => {}
+    return () => {
+      form.setFieldsValue(user) // 设置数据的回显
+      onFinish(user)
+    }
   }
 
   return (
@@ -75,11 +77,15 @@ function Login() {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
         className={styles.main}
+        form={form}
       >
         <Form.Item
           label="邮箱"
           name="email"
-          rules={[{ required: true, message: '请输入邮箱' }]}
+          rules={[
+            { required: true, message: '请输入邮箱' },
+            { type: 'email', message: '请输入正确的邮箱地址' }
+          ]}
         >
           <Input placeholder='请输入邮箱' />
         </Form.Item>
@@ -101,7 +107,7 @@ function Login() {
       <div className={styles.users}>
         <Row gutter={20}>
           { testUsers.map((v) => (
-              <Col span={12}>
+              <Col span={12} key={v.email}>
                 <h3>
                   测试账号，<Button onClick={autoLogin({email: v.email, pass: v.pass})}>一键登录</Button>
                 </h3>
