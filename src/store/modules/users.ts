@@ -7,7 +7,7 @@ type Token = string
 type Infos = {
   [index: string]: unknown
 }
-type UsersState = {
+export type UsersState = {
   token: Token,
   infos: Infos
 }
