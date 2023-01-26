@@ -4,7 +4,7 @@ import http from '../../utils/http'
 
 
 type Token = string
-type Infos = {
+export type Infos = {
   [index: string]: unknown
 }
 export type UsersState = {

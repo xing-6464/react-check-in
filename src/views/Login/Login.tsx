@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { message, Button, Form, Input, Row, Col } from 'antd'
 import classnames from 'classnames'
 
-import { useAppDispatch, useSelector } from '../../store'
+import { useAppDispatch } from '../../store'
 import { loginAction, updateToken } from '../../store/modules/users'
 import styles from './Login.module.scss'
 
@@ -25,7 +25,6 @@ const testUsers: User[] = [
 
 function Login() {
   const navigate = useNavigate()
-  const token = useSelector(s => s.users.token)
   const dispatch = useAppDispatch()
 
   const [form] = Form.useForm()
