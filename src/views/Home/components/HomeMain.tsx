@@ -1,8 +1,11 @@
 import React from 'react'
 
+import styles from '../Home.module.scss'
+
+
 function HomeMain() {
   return (
-    <div>HomeMain</div>
+    <div>Home</div>
   )
 }
 

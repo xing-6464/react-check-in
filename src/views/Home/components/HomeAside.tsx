@@ -3,6 +3,9 @@ import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons'
 
+import styles from '../Home.module.scss'
+
+
 const items: MenuProps['items'] = [
   {
     key: '1',
@@ -26,11 +29,11 @@ const items: MenuProps['items'] = [
 function HomeAside() {
   return (
     <Menu
-      style={{ width: 256 }}
       defaultSelectedKeys={['2']}
       defaultOpenKeys={['1']}
       mode="inline"
       items={items}
+      className={styles['home-aside']}
     />
   )
 }

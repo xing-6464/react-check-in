@@ -37,3 +37,17 @@
   flex-grow: 1;
   position: relative;
 }
+
+.home-aside {
+  height: calc(100vh - 64px);
+  border: none;
+  padding-top: 30px;
+}
+
+.home-breadcrumb {
+  background: #fff;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+}

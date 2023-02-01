@@ -23,7 +23,7 @@ export default function Home() {
           </Sider>
           <Layout style={{ padding: '20px' }}>
             <HomeBreadcrumb />
-            <Content>
+            <Content className={styles['home-main']}>
               <HomeMain />
             </Content>
           </Layout>
