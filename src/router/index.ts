@@ -1,21 +1,21 @@
-import React, { lazy } from 'react'
-import { createBrowserRouter, Navigate } from 'react-router-dom'
-import type { RouteObject } from 'react-router-dom'
+import React, { lazy } from "react";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import type { RouteObject } from "react-router-dom";
 import {
   CopyOutlined,
   CalendarOutlined,
   WarningOutlined,
   FileAddOutlined,
-  ScheduleOutlined
+  ScheduleOutlined,
 } from '@ant-design/icons'
 
-const Home = lazy(() => import('../views/Home/Home'))
-const Sign = lazy(() => import('../views/Sign/Sign'))
-const Apply = lazy(() => import('../views/Apply/Apply'))
-const Check = lazy(() => import('../views/Check/Check'))
-const Login = lazy(() => import('../views/Login/Login'))
-const Exception = lazy(() => import('../views/Exception/Exception'))
-const BeforeEach = lazy(() => import('../components/BeforeEach/BeforeEach'))
+const Home = lazy(()=> import('../views/Home/Home'))
+const Sign = lazy(()=> import('../views/Sign/Sign'))
+const Exception = lazy(()=> import('../views/Exception/Exception'))
+const Apply = lazy(()=> import('../views/Apply/Apply'))
+const Check = lazy(()=> import('../views/Check/Check'))
+const Login = lazy(()=> import('../views/Login/Login'))
+const BeforeEach = lazy(()=> import('../components/BeforeEach/BeforeEach'))
 
 
 declare module 'react-router' {
@@ -23,29 +23,31 @@ declare module 'react-router' {
     meta?: {
       menu?: boolean
       title?: string
-      icon?: React.ReactNode
+      icon?: React.ReactNode 
       auth?: boolean
-    }
+    },
+    name?: string
   }
   interface NonIndexRouteObject {
     meta?: {
       menu?: boolean
       title?: string
-      icon?: React.ReactNode
+      icon?: React.ReactNode  
       auth?: boolean
-    }
+    },
+    name?: string
   }
 }
-
 
 export const routes: RouteObject[] = [
   {
     path: '/',
-    element: React.createElement(Navigate, { to: '/sign' })
+    element: React.createElement(Navigate, {to: '/sign'})
   },
   {
     path: '/',
-    element: React.createElement(BeforeEach, null, [React.createElement(Home)]),
+    name: 'home',
+    element: React.createElement(BeforeEach, null, React.createElement(Home)),
     meta: {
       menu: true,
       title: '考勤管理',
@@ -55,6 +57,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         path: 'sign',
+        name: 'sign',
         element: React.createElement(Sign),
         meta: {
           menu: true,
@@ -65,32 +68,35 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'exception',
+        name: 'exception',
         element: React.createElement(Exception),
         meta: {
           menu: true,
           title: '异常考勤查询',
           icon: React.createElement(WarningOutlined),
-          auth: true
+          auth: true,
         }
       },
       {
         path: 'apply',
+        name: 'apply',
         element: React.createElement(Apply),
         meta: {
           menu: true,
           title: '添加考勤审批',
           icon: React.createElement(FileAddOutlined),
-          auth: true
+          auth: true,
         }
       },
       {
         path: 'check',
+        name: 'check',
         element: React.createElement(Check),
         meta: {
           menu: true,
           title: '我的考勤审批',
           icon: React.createElement(ScheduleOutlined),
-          auth: true
+          auth: true,
         }
       }
     ]
@@ -99,9 +105,8 @@ export const routes: RouteObject[] = [
     path: '/login',
     element: React.createElement(BeforeEach, null, React.createElement(Login))
   }
-]
+];
 
 const router = createBrowserRouter(routes)
-
 
 export default router

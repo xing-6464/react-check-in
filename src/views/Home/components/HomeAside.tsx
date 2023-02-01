@@ -1,32 +1,39 @@
 import React from 'react'
 import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons'
+import _ from 'lodash'
+import { useAppSelector } from '../../../store'
 
+import { routes } from '../../../router'
 import styles from '../Home.module.scss'
 
 
-const items: MenuProps['items'] = [
-  {
-    key: '1',
-    label: 'Navigation One',
-    icon: <AppstoreOutlined />,
-    children: [
-      {
-        key: '2',
-        label: '111',
-        icon: <MailOutlined />
-      },
-      {
-        key: '3',
-        label: '2222',
-        icon: <SettingOutlined />
-      }
-    ]
-  }
-]
-
 function HomeAside() {
+  const permission = useAppSelector((s) => s.users.infos.permission) as unknown[]
+  console.log(permission)
+
+  const menus = _.cloneDeep(routes).filter((v)=> {
+    v.children = v.children?.filter((v)=> v.meta?.menu && permission.includes(v.name))
+    return v.meta?.menu && permission.includes(v.name)
+  })
+  
+
+  const items: MenuProps['items'] = menus.map((v1)=>{
+    const children = v1.children?.map((v2)=>{
+      return {
+        key: v1.path! + v2.path!,
+        label: v2.meta?.title,
+        icon: v2.meta?.icon
+      }
+    })
+    return {
+      key: v1.path!,
+      label: v1.meta?.title,
+      icon: v1.meta?.icon,
+      children
+    }
+  })
+
   return (
     <Menu
       defaultSelectedKeys={['2']}
