@@ -10,11 +10,10 @@ import styles from '../Home.module.scss'
 
 function HomeAside() {
   const permission = useAppSelector((s) => s.users.infos.permission) as unknown[]
-  console.log(permission)
 
   const menus = _.cloneDeep(routes).filter((v)=> {
-    v.children = v.children?.filter((v)=> v.meta?.menu && permission.includes(v.name))
-    return v.meta?.menu && permission.includes(v.name)
+    v.children = v.children?.filter((v)=> v.meta?.menu && permission?.includes(v.name))
+    return v.meta?.menu && permission?.includes(v.name)
   })
   
 
