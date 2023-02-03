@@ -39,8 +39,8 @@ function HomeAside() {
 
   return (
     <Menu
-      defaultSelectedKeys={[patch]}
-      defaultOpenKeys={[subPatch]}
+      selectedKeys={[patch]}
+      openKeys={[subPatch]}
       mode="inline"
       items={items}
       className={styles['home-aside']}
