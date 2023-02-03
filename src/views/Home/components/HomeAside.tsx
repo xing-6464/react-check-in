@@ -16,12 +16,10 @@ function HomeAside() {
   const subPatch = matchs![0].pathnameBase || ''
   const patch = matchs![1].pathnameBase || ''
 
-
   const menus = _.cloneDeep(routes).filter((v)=> {
     v.children = v.children?.filter((v)=> v.meta?.menu && permission?.includes(v.name))
     return v.meta?.menu && permission?.includes(v.name)
   })
-  
 
   const items: MenuProps['items'] = menus.map((v1)=>{
     const children = v1.children?.map((v2)=>{

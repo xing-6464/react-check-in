@@ -1,6 +1,5 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
-import { Breadcrumb, Layout, Menu, theme } from 'antd'
+import { Layout } from 'antd'
 const { Header, Content, Sider } = Layout
 
 import styles from './Home.module.scss'
