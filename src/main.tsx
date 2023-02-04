@@ -9,7 +9,6 @@ import './assets/styles/common.scss'
 import router from './router'
 import store from './store'
 
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Suspense>
@@ -17,5 +16,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <RouterProvider router={router}></RouterProvider>
       </Provider>
     </Suspense>
-  </React.StrictMode>,
+  </React.StrictMode>
 )

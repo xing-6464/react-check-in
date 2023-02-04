@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Descriptions, Button, Tag, Calendar, Row, Space, Select } from 'antd'
-import "dayjs/locale/zh-cn"
+import 'dayjs/locale/zh-cn'
 import locale from 'antd/es/date-picker/locale/zh_CN'
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
- 
+
 import styles from './Sign.module.scss'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { getTimeAction, updateInfos } from '../../store/modules/signs'
@@ -32,72 +32,95 @@ const originDetailValue: Record<keyof typeof DetailKey, number> = {
 
 const detailState = {
   type: 'success' ? 'success' : 'error',
-  text: '正常' ? '正常' : '异常'
+  text: '正常' ? '正常' : '异常',
 }
 
 export default function Sign() {
   const [month, setMonth] = useState(date.getMonth())
   const navigate = useNavigate()
-  const signsInfos = useAppSelector(s => s.signs.infos)
-  const usersInfos = useAppSelector(s => s.users.infos)
+  const signsInfos = useAppSelector((s) => s.signs.infos)
+  const usersInfos = useAppSelector((s) => s.users.infos)
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-
     if (_.isEmpty(signsInfos)) {
-      dispatch(getTimeAction({ userid: usersInfos._id as string })).then(action => {
-        const {errcode, infos} = (action.payload as {[index: string]: unknown}).data as {[index: string]: unknown}
+      dispatch(getTimeAction({ userid: usersInfos._id as string })).then(
+        (action) => {
+          const { errcode, infos } = (
+            action.payload as { [index: string]: unknown }
+          ).data as { [index: string]: unknown }
 
-        if (errcode === 0) {
-          dispatch(updateInfos(infos as Infos))
+          if (errcode === 0) {
+            dispatch(updateInfos(infos as Infos))
+          }
         }
-      })
+      )
     }
   }, [signsInfos, usersInfos, dispatch])
-  
+
   const handleToException = () => {
     navigate('/exception')
   }
 
   return (
     <div>
-      <Descriptions className={styles['descriptions']} layout="vertical" column={9} bordered>
+      <Descriptions
+        className={styles['descriptions']}
+        layout="vertical"
+        column={9}
+        bordered
+      >
         <Descriptions.Item label="月份">{month + 1}月</Descriptions.Item>
-        {
-          Object.entries(DetailKey).map((v) => (
-            <Descriptions.Item key={v[0]} label={v[1]}>
-              {originDetailValue[v[0] as keyof typeof DetailKey]}
-            </Descriptions.Item>
-          ))
-        }
+        {Object.entries(DetailKey).map((v) => (
+          <Descriptions.Item key={v[0]} label={v[1]}>
+            {originDetailValue[v[0] as keyof typeof DetailKey]}
+          </Descriptions.Item>
+        ))}
         <Descriptions.Item label="操作">
-          <Button type="primary" onClick={handleToException} ghost size="small">查看详情</Button>
+          <Button type="primary" onClick={handleToException} ghost size="small">
+            查看详情
+          </Button>
         </Descriptions.Item>
         <Descriptions.Item label="考勤状态">
           <Tag color={detailState.type}>{detailState.text}</Tag>
         </Descriptions.Item>
       </Descriptions>
-      <Calendar locale={locale} headerRender={({ value, type, onChange, onTypeChange }) => {
-        
-        const monthOptions = []
+      <Calendar
+        locale={locale}
+        headerRender={({ value, type, onChange, onTypeChange }) => {
+          const monthOptions = []
 
-        for (let i = 0; i < 12; i++) {
-          monthOptions.push( <Select.Option key={i} value={i}>{i+1}月</Select.Option> )
-        }
+          for (let i = 0; i < 12; i++) {
+            monthOptions.push(
+              <Select.Option key={i} value={i}>
+                {i + 1}月
+              </Select.Option>
+            )
+          }
 
-        return (
-          <Row className={styles['calendar-header']} justify="space-between" align="middle">
-            <Button type="primary">在线签到</Button>
-            <Space>
-              <Button>{value.year()}年</Button>
-              <Select value={month} onChange={(newMonth) => {
-                setMonth(newMonth)
-                onChange(value.clone().month(newMonth))
-              }}>{ monthOptions }</Select>
-            </Space>
-          </Row>
-        )
-      }} />
+          return (
+            <Row
+              className={styles['calendar-header']}
+              justify="space-between"
+              align="middle"
+            >
+              <Button type="primary">在线签到</Button>
+              <Space>
+                <Button>{value.year()}年</Button>
+                <Select
+                  value={month}
+                  onChange={(newMonth) => {
+                    setMonth(newMonth)
+                    onChange(value.clone().month(newMonth))
+                  }}
+                >
+                  {monthOptions}
+                </Select>
+              </Space>
+            </Row>
+          )
+        }}
+      />
     </div>
   )
 }

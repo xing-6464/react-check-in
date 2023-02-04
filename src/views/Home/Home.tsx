@@ -8,7 +8,6 @@ import HomeBreadcrumb from './components/HomeBreadcrumb'
 import HomeHeader from './components/HomeHeader'
 import HomeMain from './components/HomeMain'
 
-
 export default function Home() {
   return (
     <>

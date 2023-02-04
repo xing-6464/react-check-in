@@ -3,7 +3,6 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 
 import http from '../../utils/http'
 
-
 export type Infos = {
   [index: string]: unknown
 }
@@ -14,26 +13,31 @@ type Time = {
   userid: string
 }
 
-export const getTimeAction = createAsyncThunk('signs/getTimeAction', async (payload: Time) => {
-  const ret = await http.get('/signs/time', payload)
-  return ret
-})
-export const putTimeAction = createAsyncThunk('signs/putTimeAction', async (payload: Time) => {
-  const ret = await http.put('/signs/infos', payload)
-  return ret
-})
-
+export const getTimeAction = createAsyncThunk(
+  'signs/getTimeAction',
+  async (payload: Time) => {
+    const ret = await http.get('/signs/time', payload)
+    return ret
+  }
+)
+export const putTimeAction = createAsyncThunk(
+  'signs/putTimeAction',
+  async (payload: Time) => {
+    const ret = await http.put('/signs/infos', payload)
+    return ret
+  }
+)
 
 const signsSlice = createSlice({
   name: 'signs',
   initialState: {
-    infos: {}
+    infos: {},
   } as SignsState,
   reducers: {
-    updateInfos (state, action: PayloadAction<Infos>) {
+    updateInfos(state, action: PayloadAction<Infos>) {
       state.infos = action.payload
     },
-  }
+  },
 })
 
 export const { updateInfos } = signsSlice.actions
