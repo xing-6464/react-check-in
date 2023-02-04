@@ -8,6 +8,8 @@ import type { AnyAction, Reducer } from '@reduxjs/toolkit'
 import type { PersistPartial } from 'redux-persist/es/persistReducer'
 
 import usersReducer from './modules/users'
+import signsReducer from './modules/signs'
+import type { SignsState } from './modules/signs'
 import type { UsersState } from './modules/users'
 
 const persistConfig = {
@@ -19,7 +21,8 @@ const persistConfig = {
 
 const store = configureStore({
   reducer: {
-    users: persistReducer(persistConfig, usersReducer) as Reducer<UsersState & PersistPartial, AnyAction>
+    users: persistReducer(persistConfig, usersReducer) as Reducer<UsersState & PersistPartial, AnyAction>,
+    signs: signsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

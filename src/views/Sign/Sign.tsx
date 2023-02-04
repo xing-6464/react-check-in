@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Descriptions, Button, Tag, Calendar, Row, Space, Select } from 'antd'
 import "dayjs/locale/zh-cn"
 import locale from 'antd/es/date-picker/locale/zh_CN'
+import { useNavigate } from 'react-router-dom'
+import _ from 'lodash'
  
 import styles from './Sign.module.scss'
-import { useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../../store'
+import { getTimeAction, updateInfos } from '../../store/modules/signs'
+import type { Infos } from '../../store/modules/signs'
 
 const date = new Date()
 
@@ -34,8 +38,25 @@ const detailState = {
 export default function Sign() {
   const [month, setMonth] = useState(date.getMonth())
   const navigate = useNavigate()
+  const signsInfos = useAppSelector(s => s.signs.infos)
+  const usersInfos = useAppSelector(s => s.users.infos)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+
+    if (_.isEmpty(signsInfos)) {
+      dispatch(getTimeAction({ userid: usersInfos._id as string })).then(action => {
+        const {errcode, infos} = (action.payload as {[index: string]: unknown}).data as {[index: string]: unknown}
+
+        if (errcode === 0) {
+          dispatch(updateInfos(infos as Infos))
+        }
+      })
+    }
+  }, [signsInfos, usersInfos, dispatch])
+  
   const handleToException = () => {
-    navigate('/exception<tab>')
+    navigate('/exception')
   }
 
   return (
