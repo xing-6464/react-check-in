@@ -5,3 +5,11 @@
 .calendar-header {
   margin: 20px;
 }
+
+.show-time {
+  text-align: center;
+  line-height: 60px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

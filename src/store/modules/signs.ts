@@ -23,7 +23,7 @@ export const getTimeAction = createAsyncThunk(
 export const putTimeAction = createAsyncThunk(
   'signs/putTimeAction',
   async (payload: Time) => {
-    const ret = await http.put('/signs/infos', payload)
+    const ret = await http.put('/signs/time', payload)
     return ret
   }
 )
