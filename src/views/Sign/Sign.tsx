@@ -151,7 +151,7 @@ export default function Sign() {
   }
 
   const handleToException = () => {
-    navigate('/exception')
+    navigate(`/exception?month=${month + 1}`)
   }
 
   const dateCellRender = (value: Dayjs) => {

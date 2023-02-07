@@ -1,15 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Card, Col, Empty, Row, Select, Space, Timeline } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
 import styles from './Exception.module.scss'
 
 let date = new Date()
 let year = date.getFullYear()
-let month = date.getMonth()
 
 export default function Exception() {
-  const handleChange = () => {}
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [month, setMonth] = useState(
+    searchParams.get('month')
+      ? Number(searchParams.get('month')) - 1
+      : date.getMonth()
+  )
+
+  const handleChange = (value: number) => {
+    setMonth(value)
+    setSearchParams({ month: String(value + 1) })
+  }
 
   const monthOptions = []
   for (let i = 0; i < 12; i++) {
