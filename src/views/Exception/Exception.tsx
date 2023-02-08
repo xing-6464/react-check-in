@@ -1,8 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Empty, Row, Select, Space, Timeline } from 'antd'
 import { Link, useSearchParams } from 'react-router-dom'
+import _ from 'lodash'
 
 import styles from './Exception.module.scss'
+import { useAppDispatch, useAppSelector } from '../../store'
+import { getTimeAction, updateInfos } from '../../store/modules/signs'
+import type { Infos } from '../../store/modules/signs'
+import { toZero } from '../../utils/common'
 
 let date = new Date()
 let year = date.getFullYear()
@@ -14,6 +19,39 @@ export default function Exception() {
       ? Number(searchParams.get('month')) - 1
       : date.getMonth()
   )
+  const signsInfos = useAppSelector((s) => s.signs.infos)
+  const usersInfos = useAppSelector((s) => s.users.infos)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    if (_.isEmpty(signsInfos)) {
+      dispatch(getTimeAction({ userid: usersInfos._id as string })).then(
+        (action) => {
+          const { errcode, infos } = (
+            action.payload as { [index: string]: unknown }
+          ).data as {
+            [index: string]: unknown
+          }
+
+          if (errcode === 0) {
+            dispatch(updateInfos(infos as Infos))
+          }
+        }
+      )
+    }
+  }, [signsInfos, usersInfos, dispatch])
+
+  let details
+  if (signsInfos.detail) {
+    const detailMonth = (signsInfos.detail as { [index: string]: unknown })[
+      toZero(month + 1)
+    ] as {
+      [index: string]: string
+    }
+    details = Object.entries(detailMonth)
+      .filter((v) => v[1] !== '正常出勤')
+      .sort()
+  }
 
   const handleChange = (value: number) => {
     setMonth(value)
@@ -27,6 +65,20 @@ export default function Exception() {
         {i + 1}月
       </Select.Option>
     )
+  }
+
+  const renderTime = (date: string) => {
+    const ret = (
+      (signsInfos.time as { [index: string]: unknown })[toZero(month + 1)] as {
+        [index: string]: unknown
+      }
+    )[date]
+
+    if (Array.isArray(ret)) {
+      return ret.join('-')
+    } else {
+      return '暂无打卡记录'
+    }
   }
 
   return (
@@ -44,29 +96,27 @@ export default function Exception() {
       </Row>
       <Row className={styles['exception-line']} gutter={20}>
         <Col span={12}>
-          {/* <Empty description='暂无异常考勤' imageStyle={{ height: 200 }} /> */}
-          <Timeline>
-            <Timeline.Item>
-              <h3>2023/02/06</h3>
-              <Card className={styles['exception-card']}>
-                <Space>
-                  <h4>旷工</h4>
-                  <p>考勤详情：暂无打卡记录</p>
-                </Space>
-              </Card>
-            </Timeline.Item>
-          </Timeline>
-          <Timeline>
-            <Timeline.Item>
-              <h3>2023/02/06</h3>
-              <Card className={styles['exception-card']}>
-                <Space>
-                  <h4>旷工</h4>
-                  <p>考勤详情：暂无打卡记录</p>
-                </Space>
-              </Card>
-            </Timeline.Item>
-          </Timeline>
+          {details ? (
+            <Timeline>
+              {details.map((item) => {
+                return (
+                  <Timeline.Item key={item[0]}>
+                    <h3>
+                      {year}/{month + 1}/{item[0]}
+                    </h3>
+                    <Card className={styles['exception-card']}>
+                      <Space>
+                        <h4>{item[1]}</h4>
+                        <p>考勤详情：{renderTime(item[0])}</p>
+                      </Space>
+                    </Card>
+                  </Timeline.Item>
+                )
+              })}
+            </Timeline>
+          ) : (
+            <Empty description='暂无异常考勤' imageStyle={{ height: 200 }} />
+          )}
         </Col>
         <Col span={12}>
           {/* <Empty description='暂无申请审批' imageStyle={{ height: 200 }} /> */}
