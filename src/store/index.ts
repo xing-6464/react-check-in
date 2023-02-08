@@ -1,9 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import {
-  useDispatch,
-  useSelector as useReduxSelector,
-  useSelector,
-} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
@@ -13,6 +9,7 @@ import type { PersistPartial } from 'redux-persist/es/persistReducer'
 
 import usersReducer from './modules/users'
 import signsReducer from './modules/signs'
+import checksReducer from './modules/checks'
 import type { UsersState } from './modules/users'
 
 const persistConfig = {
@@ -29,6 +26,7 @@ const store = configureStore({
       AnyAction
     >,
     signs: signsReducer,
+    checks: checksReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
