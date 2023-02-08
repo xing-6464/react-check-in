@@ -2,16 +2,22 @@ import React, { useEffect, useState } from 'react'
 import {
   Button,
   Divider,
+  Form,
   Input,
+  Modal,
   Radio,
   RadioChangeEvent,
   Row,
   Space,
   Table,
+  Select,
+  DatePicker,
 } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import _ from 'lodash'
+import locale from 'antd/es/date-picker/locale/zh_CN'
+import 'dayjs/locale/zh-cn'
 
 import styles from './Apply.module.scss'
 import { useAppDispatch, useAppSelector } from '../../store'
@@ -69,6 +75,7 @@ const columns: ColumnsType<Infos> = [
 export default function Apply() {
   const [approverType, setApproverType] = useState(defaultType)
   const [searchWord, setSearchWord] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const usersInfos = useAppSelector((s) => s.users.infos)
   const applyList = useAppSelector((s) => s.checks.applyList).filter(
     (v) =>
@@ -76,6 +83,7 @@ export default function Apply() {
       (v.note as string).includes(searchWord)
   )
   const dispatch = useAppDispatch()
+  const [form] = Form.useForm()
 
   useEffect(() => {
     if (_.isEmpty(applyList)) {
@@ -103,10 +111,27 @@ export default function Apply() {
     setSearchWord(ev.target.value)
   }
 
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
+  const onFinish = (values: any) => {
+    console.log(values)
+  }
+
+  const onFinishFailed = ({ values }: { values: any }) => {
+    console.log('Failed:', values)
+  }
+
   return (
     <div>
       <Row justify='space-between' className={styles['apply-title']}>
-        <Button type='primary'>添加审批</Button>
+        <Button type='primary' onClick={showModal}>
+          添加审批
+        </Button>
         <Space>
           <Input
             placeholder='请输入关键词'
@@ -134,6 +159,67 @@ export default function Apply() {
         size='small'
         pagination={{ defaultPageSize: 5 }}
       />
+      <Modal
+        title='添加审批'
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form
+          name='basic'
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 20 }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete='off'
+          className={styles['apply-form']}
+          form={form}
+        >
+          <Form.Item
+            label='审批人'
+            name='approvername'
+            rules={[{ required: true, message: '请选择审批人' }]}
+          >
+            <Select
+              placeholder='请选择审批人'
+              options={[{ value: '洪七公', label: '洪七公' }]}
+            />
+          </Form.Item>
+          <Form.Item label='审批事由' name='reason'>
+            <Select
+              options={[
+                { value: '年假', label: '年假' },
+                { value: '事假', label: '事假' },
+                { value: '病假', label: '病假' },
+                { value: '外出', label: '外出' },
+                { value: '补签卡', label: '补签卡' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item
+            label='时间'
+            name='time'
+            rules={[{ required: true, message: '请选择审批时间' }]}
+          >
+            <DatePicker.RangePicker showTime locale={locale} />
+          </Form.Item>
+          <Form.Item
+            label='备注'
+            name='note'
+            rules={[{ required: true, message: '请输入备注' }]}
+          >
+            <Input.TextArea rows={4} placeholder='请输入备注' />
+          </Form.Item>
+          <Row justify='end'>
+            <Space>
+              <Button>重置</Button>
+              <Button type='primary' htmlType='submit'>
+                提交
+              </Button>
+            </Space>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   )
 }
