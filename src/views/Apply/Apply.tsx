@@ -43,8 +43,8 @@ const approverTypes = [
   { label: '已通过', value: '已通过' },
   { label: '未通过', value: '未通过' },
 ]
-
 const defaultType = approverTypes[0].value
+
 const columns: ColumnsType<Infos> = [
   {
     title: '申请人',
@@ -203,7 +203,7 @@ export default function Apply() {
       </Row>
       <Table
         rowKey='_id'
-        className={styles['spply-table']}
+        className={styles['apply-table']}
         dataSource={applyList}
         columns={columns}
         size='small'
