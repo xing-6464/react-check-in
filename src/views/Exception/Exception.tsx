@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { getTimeAction, updateInfos } from '../../store/modules/signs'
 import type { Infos } from '../../store/modules/signs'
 import { toZero } from '../../utils/common'
+import { getApplyAction, updateApplyList } from '../../store/modules/checks'
 
 let date = new Date()
 let year = date.getFullYear()
@@ -21,7 +22,26 @@ export default function Exception() {
   )
   const signsInfos = useAppSelector((s) => s.signs.infos)
   const usersInfos = useAppSelector((s) => s.users.infos)
+  const applyList = useAppSelector((s) => s.checks.applyList)
   const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    if (_.isEmpty(applyList)) {
+      dispatch(getApplyAction({ applicantid: usersInfos._id as string })).then(
+        (action) => {
+          const { errcode, rets } = (
+            action.payload as { [index: string]: unknown }
+          ).data as {
+            [index: string]: unknown
+          }
+
+          if (errcode === 0) {
+            dispatch(updateApplyList(rets as Infos[]))
+          }
+        }
+      )
+    }
+  }, [applyList, usersInfos, dispatch])
 
   useEffect(() => {
     if (_.isEmpty(signsInfos)) {
@@ -52,6 +72,12 @@ export default function Exception() {
       .filter((v) => v[1] !== '正常出勤')
       .sort()
   }
+
+  const applyListMonth = applyList.filter((v) => {
+    const startTime = (v.time as string[])[0].split(' ')[0].split('-')
+    const endTime = (v.time as string[])[1].split(' ')[0].split('-')
+    return startTime[1] <= toZero(month + 1) && endTime[1] >= toZero(month + 1)
+  })
 
   const handleChange = (value: number) => {
     setMonth(value)
@@ -119,29 +145,29 @@ export default function Exception() {
           )}
         </Col>
         <Col span={12}>
-          {/* <Empty description='暂无申请审批' imageStyle={{ height: 200 }} /> */}
-          <Timeline>
-            <Timeline.Item>
-              <h3>事假</h3>
-              <Card className={styles['exception-card']}>
-                <h4>待审批</h4>
-                <p className={styles['exception-content']}>
-                  申请日期 2023-02-01 09:08:09 - 2023-02-06 09:09:12
-                </p>
-                <p className={styles['exception-content']}>申请详情 aaa</p>
-              </Card>
-            </Timeline.Item>
-            <Timeline.Item>
-              <h3>事假</h3>
-              <Card className={styles['exception-card']}>
-                <h4>待审批</h4>
-                <p className={styles['exception-content']}>
-                  申请日期 2023-02-01 09:08:09 - 2023-02-06 09:09:12
-                </p>
-                <p className={styles['exception-content']}>申请详情 aaa</p>
-              </Card>
-            </Timeline.Item>
-          </Timeline>
+          {applyListMonth.length ? (
+            <Timeline>
+              {applyListMonth.map((item) => {
+                return (
+                  <Timeline.Item key={item._id as string}>
+                    <h3>{item.reason as string}</h3>
+                    <Card className={styles['exception-card']}>
+                      <h4>{item.state as string}</h4>
+                      <p className={styles['exception-content']}>
+                        申请日期 {(item.time as string[])[0]} -{' '}
+                        {(item.time as string[])[1]}
+                      </p>
+                      <p className={styles['exception-content']}>
+                        申请详情 {item.note as string}
+                      </p>
+                    </Card>
+                  </Timeline.Item>
+                )
+              })}
+            </Timeline>
+          ) : (
+            <Empty description='暂无申请审批' imageStyle={{ height: 200 }} />
+          )}
         </Col>
       </Row>
     </div>
