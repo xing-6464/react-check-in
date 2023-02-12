@@ -16,6 +16,9 @@ const Apply = lazy(() => import('../views/Apply/Apply'))
 const Check = lazy(() => import('../views/Check/Check'))
 const Login = lazy(() => import('../views/Login/Login'))
 const BeforeEach = lazy(() => import('../components/BeforeEach/BeforeEach'))
+const NotFound = lazy(() => import('../views/NotFound/NotFound'))
+const NotAuth = lazy(() => import('../views/NotAuth/NotAuth'))
+const NotServer = lazy(() => import('../views/NotServer/NotServer'))
 
 declare module 'react-router' {
   interface IndexRouteObject {
@@ -103,6 +106,22 @@ export const routes: RouteObject[] = [
   {
     path: '/login',
     element: React.createElement(BeforeEach, null, React.createElement(Login)),
+  },
+  {
+    path: '/403',
+    element: React.createElement(NotAuth),
+  },
+  {
+    path: '/404',
+    element: React.createElement(NotFound),
+  },
+  {
+    path: '/500',
+    element: React.createElement(NotServer),
+  },
+  {
+    path: '*',
+    element: React.createElement(Navigate, { to: '/404' }),
   },
 ]
 

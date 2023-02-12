@@ -19,6 +19,8 @@ export default function BeforeEach(props: BeforeEachProps) {
 
   if (Array.isArray(matchs)) {
     const meta = matchs[matchs.length - 1].route.meta
+    const name = matchs[matchs.length - 1].route.name
+
     if (meta?.auth && _.isEmpty(infos)) {
       if (token) {
         dispatch(infosAction()).then((action) => {
@@ -30,12 +32,17 @@ export default function BeforeEach(props: BeforeEachProps) {
           }
         })
       } else {
-        return <Navigate to="/login" />
+        return <Navigate to='/login' />
       }
+    } else if (
+      Array.isArray(infos.permission) &&
+      !infos.permission.includes(name)
+    ) {
+      return <Navigate to='/403' />
     }
   }
   if (token && location.pathname === '/login') {
-    return <Navigate to="/" />
+    return <Navigate to='/' />
   }
   return <>{props.children}</>
 }
