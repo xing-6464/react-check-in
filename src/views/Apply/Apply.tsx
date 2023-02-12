@@ -12,17 +12,30 @@ import {
   Table,
   Select,
   DatePicker,
+  message,
 } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import _ from 'lodash'
 import locale from 'antd/es/date-picker/locale/zh_CN'
 import 'dayjs/locale/zh-cn'
+import dayjs from 'dayjs'
 
 import styles from './Apply.module.scss'
 import { useAppDispatch, useAppSelector } from '../../store'
-import { getApplyAction, updateApplyList } from '../../store/modules/checks'
+import {
+  getApplyAction,
+  postApplyAction,
+  updateApplyList,
+} from '../../store/modules/checks'
 import type { Infos } from '../../store/modules/checks'
+
+interface FormInfos {
+  approvername: string
+  note: string
+  reason: string
+  time: [string, string]
+}
 
 const approverTypes = [
   { label: '全部', value: '全部' },
@@ -116,14 +129,51 @@ export default function Apply() {
   }
   const handleCancel = () => {
     setIsModalOpen(false)
+    handleReset()
   }
 
-  const onFinish = (values: any) => {
-    console.log(values)
+  const onFinish = (values: FormInfos) => {
+    values.time[0] = dayjs(values.time[0]).format('YYYY-MM-DD hh:mm:ss')
+    values.time[1] = dayjs(values.time[1]).format('YYYY-MM-DD hh:mm:ss')
+    const applyList = {
+      ...values,
+      applicantid: usersInfos._id as string,
+      applicantname: usersInfos.name as string,
+      approverid:
+        Array.isArray(usersInfos.approver) &&
+        usersInfos.approver.find((item) => item.name === values.approvername)
+          ._id,
+    }
+    dispatch(postApplyAction(applyList)).then((action) => {
+      const { errcode } = (action.payload as { [index: string]: unknown })
+        .data as { [index: string]: unknown }
+
+      if (errcode === 0) {
+        message.success('添加审批成功')
+        handleCancel()
+        dispatch(
+          getApplyAction({ applicantid: usersInfos._id as string })
+        ).then((action) => {
+          const { errcode, rets } = (
+            action.payload as { [index: string]: unknown }
+          ).data as {
+            [index: string]: unknown
+          }
+
+          if (errcode === 0) {
+            dispatch(updateApplyList(rets as Infos[]))
+          }
+        })
+      }
+    })
   }
 
   const onFinishFailed = ({ values }: { values: any }) => {
     console.log('Failed:', values)
+  }
+
+  const handleReset = () => {
+    form.resetFields()
   }
 
   return (
@@ -180,13 +230,23 @@ export default function Apply() {
             name='approvername'
             rules={[{ required: true, message: '请选择审批人' }]}
           >
-            <Select
-              placeholder='请选择审批人'
-              options={[{ value: '洪七公', label: '洪七公' }]}
-            />
+            <Select allowClear placeholder='请选择审批人'>
+              {Array.isArray(usersInfos.approver) &&
+                usersInfos.approver.map((item) => (
+                  <Select.Option key={item._id} value={item.name}>
+                    {item.name}
+                  </Select.Option>
+                ))}
+            </Select>
           </Form.Item>
-          <Form.Item label='审批事由' name='reason'>
+          <Form.Item
+            label='审批事由'
+            name='reason'
+            rules={[{ required: true, message: '请选择审批人' }]}
+          >
             <Select
+              allowClear
+              placeholder='请选择请假事由'
               options={[
                 { value: '年假', label: '年假' },
                 { value: '事假', label: '事假' },
@@ -212,7 +272,7 @@ export default function Apply() {
           </Form.Item>
           <Row justify='end'>
             <Space>
-              <Button>重置</Button>
+              <Button onClick={handleReset}>重置</Button>
               <Button type='primary' htmlType='submit'>
                 提交
               </Button>
