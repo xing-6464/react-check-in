@@ -12,7 +12,9 @@ import {
   putApplyAction,
   updateCheckList,
 } from '../../store/modules/checks'
+import { putRemindAction, updateInfo } from '../../store/modules/news'
 import type { Infos } from '../../store/modules/checks'
+import type { Info } from '../../store/modules/news'
 
 const approverTypes = [
   { label: '全部', value: '全部' },
@@ -28,6 +30,7 @@ export default function Check() {
 
   const dispatch = useAppDispatch()
   const usersInfos = useAppSelector((s) => s.users.infos)
+  const newsInfo = useAppSelector((s) => s.news.info)
   const checkList = useAppSelector((s) => s.checks.checkList).filter(
     (v) =>
       (v.state === approverType || defaultType === approverType) &&
@@ -52,7 +55,27 @@ export default function Check() {
     }
   }, [checkList, usersInfos, dispatch])
 
-  const handlePutApply = (_id: string, state: '已通过' | '未通过') => {
+  useEffect(() => {
+    if (newsInfo.approver) {
+      dispatch(
+        putRemindAction({ userid: usersInfos._id as string, approver: false })
+      ).then((action) => {
+        const { errcode, info } = (
+          action.payload as { [index: string]: unknown }
+        ).data as { [index: string]: unknown }
+
+        if (errcode === 0) {
+          dispatch(updateInfo(info as Info))
+        }
+      })
+    }
+  }, [dispatch, usersInfos, newsInfo])
+
+  const handlePutApply = (
+    _id: string,
+    state: '已通过' | '未通过',
+    applicantid: string
+  ) => {
     return () => {
       dispatch(putApplyAction({ _id, state })).then((action) => {
         const { errcode } = (action.payload as { [index: string]: unknown })
@@ -76,6 +99,8 @@ export default function Check() {
               dispatch(updateCheckList(rets as Infos[]))
             }
           })
+
+          dispatch(putRemindAction({ userid: applicantid, applicant: true }))
         }
       })
     }
@@ -124,7 +149,11 @@ export default function Check() {
                 backgroundColor: '#67c23a',
                 border: '1px #67c23a solid',
               }}
-              onClick={handlePutApply(record._id as string, '已通过')}
+              onClick={handlePutApply(
+                record._id as string,
+                '已通过',
+                record.applicantid as string
+              )}
             />
             <Button
               type='primary'
@@ -132,7 +161,11 @@ export default function Check() {
               shape='circle'
               size='small'
               icon={<CloseOutlined />}
-              onClick={handlePutApply(record._id as string, '未通过')}
+              onClick={handlePutApply(
+                record._id as string,
+                '未通过',
+                record.applicantid as string
+              )}
             />
           </Space>
         )

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 import { Dropdown, Badge, Space, Avatar } from 'antd'
 import { BellOutlined } from '@ant-design/icons'
@@ -9,7 +10,6 @@ import { useAppSelector, useAppDispatch } from '../../../store'
 import { clearToken } from '../../../store/modules/users'
 import { getRemindAction, updateInfo } from '../../../store/modules/news'
 import type { Info } from '../../../store/modules/news'
-import { Link } from 'react-router-dom'
 
 function HomeHeader() {
   const name = useAppSelector((s) => s.users.infos.name) as string

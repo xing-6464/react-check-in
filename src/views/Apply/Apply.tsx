@@ -28,7 +28,9 @@ import {
   postApplyAction,
   updateApplyList,
 } from '../../store/modules/checks'
+import { putRemindAction, updateInfo } from '../../store/modules/news'
 import type { Infos } from '../../store/modules/checks'
+import type { Info } from '../../store/modules/news'
 
 interface FormInfos {
   approvername: string
@@ -89,14 +91,33 @@ export default function Apply() {
   const [approverType, setApproverType] = useState(defaultType)
   const [searchWord, setSearchWord] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+
   const usersInfos = useAppSelector((s) => s.users.infos)
   const applyList = useAppSelector((s) => s.checks.applyList).filter(
     (v) =>
       (v.state === approverType || defaultType === approverType) &&
       (v.note as string).includes(searchWord)
   )
+  const newsInfo = useAppSelector((s) => s.news.info)
   const dispatch = useAppDispatch()
+
   const [form] = Form.useForm()
+
+  useEffect(() => {
+    if (newsInfo.applicant) {
+      dispatch(
+        putRemindAction({ userid: usersInfos._id as string, applicant: false })
+      ).then((action) => {
+        const { errcode, info } = (
+          action.payload as { [index: string]: unknown }
+        ).data as { [index: string]: unknown }
+
+        if (errcode === 0) {
+          dispatch(updateInfo(info as Info))
+        }
+      })
+    }
+  }, [dispatch, usersInfos, newsInfo])
 
   useEffect(() => {
     if (_.isEmpty(applyList)) {
@@ -164,6 +185,9 @@ export default function Apply() {
             dispatch(updateApplyList(rets as Infos[]))
           }
         })
+        dispatch(
+          putRemindAction({ userid: applyList.approverid, approver: true })
+        )
       }
     })
   }
