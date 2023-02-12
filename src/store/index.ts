@@ -10,6 +10,7 @@ import type { PersistPartial } from 'redux-persist/es/persistReducer'
 import usersReducer from './modules/users'
 import signsReducer from './modules/signs'
 import checksReducer from './modules/checks'
+import newsReducer from './modules/news'
 import type { UsersState } from './modules/users'
 
 const persistConfig = {
@@ -27,6 +28,7 @@ const store = configureStore({
     >,
     signs: signsReducer,
     checks: checksReducer,
+    news: newsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
